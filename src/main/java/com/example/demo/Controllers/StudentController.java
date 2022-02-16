@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -20,35 +22,60 @@ public class StudentController {
     private final StudentRepository repository;
     private final PersonRepository personRepository;
 
-    public StudentController(@Autowired StudentRepository repository,@Autowired PersonRepository personRepository) {
+    /**
+     * constructor to initialize the class
+     *
+     * @param repository       instance of {@link StudentRepository} that is maid and injected by spring
+     * @param personRepository instance of {@link PersonRepository} that is maid and injected by spring( needed because students ar person as well)
+     */
+    public StudentController(@Autowired StudentRepository repository, @Autowired PersonRepository personRepository) {
         this.repository = repository;
         this.personRepository = personRepository;
     }
 
+    /**
+     * method to inset a new student in DB
+     * it checks if the national code is already exist
+     * then makes the person first and gives it to student
+     *
+     * @param person        the actual student( identity and this stuff)
+     * @param bindingResult the result of validating the given person
+     * @param student       the student to insert i db, it just injected by spring
+     * @param map           an instance of {@link LinkedHashMap} injected by spring to use as response
+     * @return the result of inserting student
+     */
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public String newStudent(@RequestBody @Valid Person person, BindingResult bindingResult, @Autowired Student student) {
+    public Map<String, Object> newStudent(@RequestBody @Valid Person person, BindingResult bindingResult,
+                                          @Autowired Student student, @Autowired LinkedHashMap<String, Object> map) {
         if (bindingResult.hasErrors()) {
-            return "{\"status\" : \"failed\"," +
-                    "\"" + bindingResult.getFieldError().getField() +
-                    "\": \"" + bindingResult.getFieldError().getDefaultMessage() + "\"}";
+            map.put("status", "failed");
+            map.put(bindingResult.getFieldError().getField(), bindingResult.getFieldError().getDefaultMessage());
         } else {
             if (personRepository.findPersonByNationalKey(person.getNationalKey()).isPresent()) {
-                return "{" +
-                        "\"status\" : \"failed\"," +
-                        "\"name\" : \"national code already exists\"" +
-                        "}";
+                map.put("status", "failed");
+                map.put("name", "national code already exists");
+            } else {
+                person.setId(UUID.randomUUID());
+                student.setId(UUID.randomUUID());
+                personRepository.save(person);
+                student.setPerson(person);
+                repository.save(student);
+                map.put("status", "success");
             }
-            person.setId(UUID.randomUUID());
-            student.setId(UUID.randomUUID());
-            personRepository.save(person);
-            student.setPerson(person);
-            repository.save(student);
-            return "{\"status\" : \"success\"";
         }
+        return map;
     }
 
+    /**
+     * get all students
+     *
+     * @param map an instance of {@link LinkedHashMap} injected by spring to use as response
+     * @return list of existing students
+     */
     @RequestMapping(produces = "application/json")
-    public Iterable<Student> getStudents() {
-        return repository.findAll();
+    public  Map<String, Object> getStudents(@Autowired LinkedHashMap<String, Object> map) {
+        map.put("status", "success");
+        map.put("students",repository.findAll());
+        return map;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.demo.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.UniqueElements;
 
@@ -14,6 +15,7 @@ public class Person {
     @Id
     @Column( nullable = false, unique = true, updatable = false)
     @Type(type="org.hibernate.type.UUIDCharType")
+    @JsonIgnore
     private UUID id;
 
     @Size(min = 2)

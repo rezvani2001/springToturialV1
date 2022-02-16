@@ -2,8 +2,6 @@ package com.example.demo.Controllers;
 
 import com.example.demo.Models.College;
 import com.example.demo.Repositories.CollegeRepository;
-import com.example.demo.extras.Mapping;
-import com.example.demo.extras.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,8 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping(path = "api/v1/college")
@@ -36,32 +33,38 @@ public class CollegeController {
      *
      * @param college       the college that client wants to generate on server
      * @param bindingResult the result of validating the given college
+     * @param map an instance of {@link LinkedHashMap} injected by spring to use as response
      * @return the response of client request to it as a json
      */
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public Message newCollege(@Valid @RequestBody @NotNull College college,
-                              BindingResult bindingResult, @Autowired Message message) {
+    public Map<String, Object> newCollege(@Valid @RequestBody @NotNull College college,
+                                          BindingResult bindingResult, @Autowired LinkedHashMap<String, Object> map) {
         if (bindingResult.hasErrors()) {
-            message.setStatus(Message.Status.FAILED);
-            message.setPayload(new Mapping(bindingResult.getFieldError().getField(),
-                    bindingResult.getFieldError().getDefaultMessage()));
+            map.put("status", "failed");
+            map.put(bindingResult.getFieldError().getField(),
+                    bindingResult.getFieldError().getDefaultMessage());
         } else {
             if (repository.findCollegeByName(college.getName()).isPresent()) {
-                message.setStatus(Message.Status.FAILED);
-                message.setPayload(new Mapping("name", "college name already exists"));
+                map.put("status", "failed");
+                map.put("name", "college name already exists");
             }
             college.setId(UUID.randomUUID());
             repository.save(college);
-
-            message.setStatus(Message.Status.SUCCESS);
+            map.put("status", "success");
         }
-        return message;
+        return map;
     }
 
+    /**
+     * methode to get all colleges records
+     *
+     * @param map an instance of {@link LinkedHashMap} injected by spring to use as response
+     * @return all existing colleges
+     */
     @RequestMapping(produces = "application/json")
-    public Message getColleges(@Autowired Message message) {
-        message.setStatus(Message.Status.SUCCESS);
-        message.setPayload(new Mapping("Colleges", repository.findAll()));
-        return message;
+    public Map<String, Object> getColleges(@Autowired LinkedHashMap<String, Object> map) {
+        map.put("status", "success");
+        map.put("colleges", repository.findAll());
+        return map;
     }
 }

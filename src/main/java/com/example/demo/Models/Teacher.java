@@ -1,5 +1,6 @@
 package com.example.demo.Models;
 
+import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ public class Teacher {
     private UUID id;
 
     @OneToOne
+    @JsonUnwrapped
     @JoinColumn(nullable = false, updatable = false)
     private Person person;
 

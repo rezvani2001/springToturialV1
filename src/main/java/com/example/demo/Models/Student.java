@@ -1,6 +1,8 @@
 package com.example.demo.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -17,7 +19,8 @@ public class Student {
     private UUID id;
 
     @OneToOne
-    @JoinColumn
+    @JsonUnwrapped
+    @JoinColumn(nullable = false, updatable = false)
     private Person person;
 
     @OneToMany(mappedBy = "student")
