@@ -1,11 +1,11 @@
-package com.example.demo.Controllers;
+package com.example.demo.Controllers.v1;
 
 import com.example.demo.Models.Person;
-import com.example.demo.Models.Teacher;
+import com.example.demo.Models.Student;
 import com.example.demo.Repositories.PersonRepository;
 import com.example.demo.Repositories.StudentRepository;
-import com.example.demo.Repositories.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,67 +18,67 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(path = "api/v1/teacher")
-public class TeacherController {
-    private final TeacherRepository repository;
+@RequestMapping(path = "api/v1/student")
+public class StudentController {
+    private final StudentRepository repository;
     private final PersonRepository personRepository;
 
     /**
      * constructor to initialize the class
      *
-     * @param repository instance of {@link TeacherRepository} that is maid and injected by spring
-     * @param personRepository instance of {@link PersonRepository} that is maid and injected by spring( needed because teachers ar person as well)
+     * @param repository       instance of {@link StudentRepository} that is maid and injected by spring
+     * @param personRepository instance of {@link PersonRepository} that is maid and injected by spring( needed because students ar person as well)
      */
-    public TeacherController(@Autowired TeacherRepository repository,@Autowired PersonRepository personRepository) {
+    public StudentController(@Autowired StudentRepository repository, @Autowired PersonRepository personRepository) {
         this.repository = repository;
         this.personRepository = personRepository;
     }
 
     /**
-     * method to inset a new teacher in DB
+     * method to inset a new student in DB
      * it checks if the national code is already exist
-     * then makes the person first and gives it to teacher
+     * then makes the person first and gives it to student
      *
-     * @param person the actual teacher( identity and this stuff)
+     * @param person        the actual student( identity and this stuff)
      * @param bindingResult the result of validating the given person
-     * @param teacher the teacher to insert it in db, it just injected by spring
-     * @param map an instance of {@link LinkedHashMap} injected by spring to use as response
-     * @return the result of inserting teacher
+     * @param student       the student to insert i db, it just injected by spring
+     * @param map           an instance of {@link LinkedHashMap} injected by spring to use as response
+     * @return the result of inserting student
      */
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public Map<String, Object> newTeacher(@RequestBody @Valid Person person, BindingResult bindingResult,
-                          @Autowired Teacher teacher, @Autowired LinkedHashMap<String, Object> map) {
+    public ResponseEntity<Map<String, Object>> newStudent(@RequestBody @Valid Person person, BindingResult bindingResult,
+                                                          @Autowired Student student, @Autowired LinkedHashMap<String, Object> map) {
         if (bindingResult.hasErrors()) {
             map.put("status", "failed");
             map.put(bindingResult.getFieldError().getField(), bindingResult.getFieldError().getDefaultMessage());
+            return ResponseEntity.badRequest().body(map);
         } else {
             if (personRepository.findPersonByNationalKey(person.getNationalKey()).isPresent()) {
                 map.put("status", "failed");
                 map.put("name", "national code already exists");
+                return ResponseEntity.badRequest().body(map);
             } else {
-                map.put("status", "success");
                 person.setId(UUID.randomUUID());
-                teacher.setId(UUID.randomUUID());
+                student.setId(UUID.randomUUID());
                 personRepository.save(person);
-                teacher.setPerson(person);
-                repository.save(teacher);
+                student.setPerson(person);
+                repository.save(student);
                 map.put("status", "success");
+                return ResponseEntity.ok(map);
             }
         }
-
-        return map;
     }
 
     /**
-     * get all teachers
+     * get all students
      *
      * @param map an instance of {@link LinkedHashMap} injected by spring to use as response
-     * @return list of existing teachers
+     * @return list of existing students
      */
     @RequestMapping(produces = "application/json")
-    public Map<String, Object> getTeachers(@Autowired LinkedHashMap<String, Object> map) {
+    public  ResponseEntity<Map<String, Object>> getStudents(@Autowired LinkedHashMap<String, Object> map) {
         map.put("status", "success");
-        map.put("teachers",repository.findAll());
-        return map;
+        map.put("students",repository.findAll());
+        return ResponseEntity.ok(map);
     }
 }

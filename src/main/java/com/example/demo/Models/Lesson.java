@@ -2,6 +2,7 @@ package com.example.demo.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Type;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -12,15 +13,23 @@ import java.util.UUID;
 public class Lesson {
     @Id
     @Column(updatable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID id;
 
     @Min(value = 1)
+    @NonNull
     private int unit;
+
+    @NonNull
+    private String name;
 
     @OneToMany
     @JsonIgnore
     private Set<Teacher> teachers;
+
+    @OneToMany(mappedBy = "lesson")
+    @JsonIgnore
+    private Set<StudentLesson> students;
 
     public UUID getId() {
         return id;
@@ -44,5 +53,22 @@ public class Lesson {
 
     public void setTeachers(Set<Teacher> teachers) {
         this.teachers = teachers;
+    }
+
+    @NonNull
+    public String getName() {
+        return name;
+    }
+
+    public void setName(@NonNull String name) {
+        this.name = name;
+    }
+
+    public Set<StudentLesson> getStudents() {
+        return students;
+    }
+
+    public void setStudents(Set<StudentLesson> students) {
+        this.students = students;
     }
 }

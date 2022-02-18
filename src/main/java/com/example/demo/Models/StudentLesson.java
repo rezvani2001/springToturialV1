@@ -14,6 +14,13 @@ public class StudentLesson {
 
     private float grade;
 
+    public StudentLesson(Student student, Lesson lesson) {
+        this.id = UUID.randomUUID();
+        this.grade = 0;
+        this.student = student;
+        this.lesson = lesson;
+    }
+
     @ManyToOne
     @JoinColumn()
     private Student student;
