@@ -27,17 +27,16 @@ public class CollegeController {
     private final LessonRepository lessonRepository;
 
 
-
     /**
      * constructor to initialize the field repository of the class
      *
-     * @param repository a {@link CollegeRepository} that made by spring framework and injects it in the class
+     * @param repository        a {@link CollegeRepository} that made by spring framework and injects it in the class
      * @param studentRepository instance of {@link StudentRepository} that made by spring framework and injects it in the class( required further use)
      * @param teacherRepository instance of {@link TeacherRepository} that made by spring framework and injects it in the class( required further use)
-     * @param lessonRepository instance of {@link LessonRepository} that made by spring framework and injects it in the class( required further use)
+     * @param lessonRepository  instance of {@link LessonRepository} that made by spring framework and injects it in the class( required further use)
      */
-    public CollegeController(@Autowired CollegeRepository repository,@Autowired StudentRepository studentRepository,
-                             @Autowired TeacherRepository teacherRepository,@Autowired LessonRepository lessonRepository) {
+    public CollegeController(@Autowired CollegeRepository repository, @Autowired StudentRepository studentRepository,
+                             @Autowired TeacherRepository teacherRepository, @Autowired LessonRepository lessonRepository) {
         this.repository = repository;
         this.studentRepository = studentRepository;
         this.teacherRepository = teacherRepository;
@@ -76,21 +75,35 @@ public class CollegeController {
     /**
      * method to assign a student to a college
      *
-     * @param collegeId  the id of college that want to add the student to it
-     * @param studentId the id of student that want to be added to the college
-     * @param map       an instance of {@link LinkedHashMap} injected by spring to use as response
+     * @param request the user request( it's map because it's not possible to deserialize UUID from this format) * @param map       an instance of {@link LinkedHashMap} injected by spring to use as response
      * @return result of adding asked student to asked college
      */
     @RequestMapping(path = "assign/student", produces = "application/json", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> assignStudent(@RequestBody UUID collegeId, @RequestBody UUID studentId,
+    public ResponseEntity<Map<String, Object>> assignStudent(@RequestBody HashMap<String, UUID> request,
                                                              @Autowired LinkedHashMap<String, Object> map) {
+        UUID collegeId = request.get("collegeId");
+        UUID studentId = request.get("studentId");
+
+        if (collegeId == null || studentId == null) {
+            map.put("status", "failed");
+            map.put("message", "collegeId and studentId are required");
+            return ResponseEntity.badRequest().body(map);
+        }
+
         Optional<College> optionalCollege = repository.findById(collegeId);
         if (optionalCollege.isPresent()) {
             College college = optionalCollege.get();
 
             Optional<Student> optionalStudent = studentRepository.findById(studentId);
             if (optionalStudent.isPresent()) {
-                college.getStudents().add(optionalStudent.get());
+                Student student = optionalStudent.get();
+
+                college.getStudents().add(student);
+                student.setCollege(college);
+
+                repository.save(college);
+                studentRepository.save(student);
+
                 map.put("status", "success");
                 map.put("message", "student has been assigned to college");
                 return ResponseEntity.ok(map);
@@ -109,21 +122,37 @@ public class CollegeController {
     /**
      * method to assign a teacher to a college
      *
-     * @param collegeId  the id of college that want to add the teacher to it
-     * @param teacherId the id of teacher that want to be added to the college
-     * @param map       an instance of {@link LinkedHashMap} injected by spring to use as response
+     * @param request the user request( it's map because it's not possible to deserialize UUID from this format)
+     * @param map     an instance of {@link LinkedHashMap} injected by spring to use as response
      * @return result of adding asked teacher to asked college
      */
     @RequestMapping(path = "assign/teacher", produces = "application/json", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> assignTeacher(@RequestBody UUID collegeId, @RequestBody UUID teacherId,
+    public ResponseEntity<Map<String, Object>> assignTeacher(@RequestBody HashMap<String, UUID> request,
                                                              @Autowired LinkedHashMap<String, Object> map) {
+        UUID collegeId = request.get("collegeId");
+        UUID teacherId = request.get("teacherId");
+
+        if (collegeId == null || teacherId == null) {
+            map.put("status", "failed");
+            map.put("message", "collegeId and teacherId are required");
+            return ResponseEntity.badRequest().body(map);
+        }
+
         Optional<College> optionalCollege = repository.findById(collegeId);
         if (optionalCollege.isPresent()) {
             College college = optionalCollege.get();
 
             Optional<Teacher> optionalTeacher = teacherRepository.findById(teacherId);
             if (optionalTeacher.isPresent()) {
-                college.getTeachers().add(optionalTeacher.get());
+                Teacher teacher = optionalTeacher.get();
+                college.getTeachers().add(teacher);
+
+                optionalTeacher.get().setCollege(college);
+                teacher.setCollege(college);
+
+                repository.save(college);
+                teacherRepository.save(teacher);
+
                 map.put("status", "success");
                 map.put("message", "teacher has been assigned to college");
                 return ResponseEntity.ok(map);
@@ -143,14 +172,22 @@ public class CollegeController {
     /**
      * method to assign a lesson to a college
      *
-     * @param collegeId  the id of college that want to add the lesson to it
-     * @param lessonId the id of lesson that want to be added to the college
-     * @param map       an instance of {@link LinkedHashMap} injected by spring to use as response
+     * @param request the user request( it's map because it's not possible to deserialize UUID from this format)
+     * @param map     an instance of {@link LinkedHashMap} injected by spring to use as response
      * @return result of adding asked lesson to asked college
      */
     @RequestMapping(path = "assign/lesson", produces = "application/json", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> assignLesson(@RequestBody UUID collegeId, @RequestBody UUID lessonId,
-                                                             @Autowired LinkedHashMap<String, Object> map) {
+    public ResponseEntity<Map<String, Object>> assignLesson(@RequestBody HashMap<String, UUID> request,
+                                                            @Autowired LinkedHashMap<String, Object> map) {
+        UUID collegeId = request.get("collegeId");
+        UUID lessonId = request.get("lessonId");
+
+        if (collegeId == null || lessonId == null) {
+            map.put("status", "failed");
+            map.put("message", "collegeId and lessonId are required");
+            return ResponseEntity.badRequest().body(map);
+        }
+
         Optional<College> optionalCollege = repository.findById(collegeId);
         if (optionalCollege.isPresent()) {
             College college = optionalCollege.get();
@@ -158,6 +195,7 @@ public class CollegeController {
             Optional<Lesson> optionalLesson = lessonRepository.findById(lessonId);
             if (optionalLesson.isPresent()) {
                 college.getLessons().add(optionalLesson.get());
+                repository.save(college);
                 map.put("status", "success");
                 map.put("message", "lesson has been assigned to college");
                 return ResponseEntity.ok(map);
@@ -172,7 +210,6 @@ public class CollegeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
         }
     }
-
 
 
     /**

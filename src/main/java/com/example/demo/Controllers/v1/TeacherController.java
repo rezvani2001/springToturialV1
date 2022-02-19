@@ -1,22 +1,19 @@
 package com.example.demo.Controllers.v1;
 
+import com.example.demo.Models.Lesson;
 import com.example.demo.Models.Person;
+import com.example.demo.Models.Student;
 import com.example.demo.Models.Teacher;
 import com.example.demo.Repositories.PersonRepository;
-import com.example.demo.Repositories.StudentRepository;
 import com.example.demo.Repositories.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping(path = "api/v1/teacher")
@@ -70,6 +67,42 @@ public class TeacherController {
             }
         }
     }
+
+    @RequestMapping(path = "lesson/{id}")
+    public Set<Lesson> getLessons(@PathVariable UUID id) {
+        return repository.findById(id).get().getLessons();
+    }
+
+    /**
+     * returns all students that got any lesson with the given teacher
+     *
+     * @param teacherID id of teacher that exists in request path
+     * @param map       an instance of {@link LinkedHashMap} injected by spring to use as response
+     * @return students of the teacher
+     */
+    @RequestMapping(method = RequestMethod.GET, path = "student/{teacherID}", produces = "application/json")
+    public ResponseEntity<Map<String, Object>> getStudents(@PathVariable UUID teacherID,
+                                                           @Autowired LinkedHashMap<String, Object> map) {
+        Optional<Teacher> optionalTeacher = repository.findById(teacherID);
+        if (optionalTeacher.isPresent()) {
+            ArrayList<Student> students = new ArrayList<>();
+
+            optionalTeacher.get().getLessons().forEach(lesson -> {
+                lesson.getStudents().forEach(binding -> {
+                    students.add(binding.getStudent());
+                });
+            });
+
+            map.put("status", "success");
+            map.put("students",students);
+            return ResponseEntity.ok(map);
+        } else {
+            map.put("status", "failed");
+            map.put("message", "no teacher found with provided id");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
+        }
+    }
+
 
     /**
      * get all teachers

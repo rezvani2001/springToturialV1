@@ -29,6 +29,9 @@ public class StudentLesson {
     @JoinColumn()
     private Lesson lesson;
 
+    public StudentLesson() {
+
+    }
 
     public Student getStudent() {
         return student;
@@ -48,5 +51,17 @@ public class StudentLesson {
 
     public void setGrade(float grade) {
         this.grade = grade;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    public Lesson getLesson() {
+        return lesson;
+    }
+
+    public void setLesson(Lesson lesson) {
+        this.lesson = lesson;
     }
 }

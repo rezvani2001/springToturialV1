@@ -21,11 +21,11 @@ public class College {
     @Size(min = 2 , max = 255)
     private String name;
 
-    @ManyToMany
+    @OneToMany
     @JsonIgnore
     private Set<Teacher> teachers;
 
-    @ManyToMany
+    @OneToMany
     @JsonIgnore
     private Set<Student> students;
 

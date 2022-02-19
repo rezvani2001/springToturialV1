@@ -2,19 +2,19 @@ package com.example.demo.Controllers.v1;
 
 import com.example.demo.Models.Person;
 import com.example.demo.Models.Student;
+import com.example.demo.Models.StudentLesson;
 import com.example.demo.Repositories.PersonRepository;
 import com.example.demo.Repositories.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -70,15 +70,39 @@ public class StudentController {
     }
 
     /**
+     * method to get students avg with his uuid
+     *
+     * @param studentId the id of the asked user
+     * @param map an instance of {@link LinkedHashMap} injected by spring to use as response
+     * @return the avg of the student
+     */
+    @RequestMapping(path = "avg/{studentId}", produces = "application/json")
+    public ResponseEntity<Map<String, Object>> getStudentAVG(@PathVariable UUID studentId,
+                                                             @Autowired LinkedHashMap<String, Object> map) {
+        Optional<Student> optionalStudent = repository.findById(studentId);
+
+        if (optionalStudent.isPresent()) {
+            map.put("status", "success");
+            map.put("average", optionalStudent.get().getMyAVG());
+            return ResponseEntity.ok(map);
+        } else {
+            map.put("status", "failed");
+            map.put("message", "no student found with provided id");
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
+        }
+    }
+
+    /**
      * get all students
      *
      * @param map an instance of {@link LinkedHashMap} injected by spring to use as response
      * @return list of existing students
      */
     @RequestMapping(produces = "application/json")
-    public  ResponseEntity<Map<String, Object>> getStudents(@Autowired LinkedHashMap<String, Object> map) {
+    public ResponseEntity<Map<String, Object>> getStudents(@Autowired LinkedHashMap<String, Object> map) {
         map.put("status", "success");
-        map.put("students",repository.findAll());
+        map.put("students", repository.findAll());
         return ResponseEntity.ok(map);
     }
 }
