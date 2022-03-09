@@ -1,37 +1,27 @@
 package com.example.demo.Controllers.v1;
 
+import com.example.demo.Exceptions.GeneralException;
 import com.example.demo.Models.Person;
-import com.example.demo.Models.Student;
-import com.example.demo.Models.StudentLesson;
-import com.example.demo.Repositories.PersonRepository;
-import com.example.demo.Repositories.StudentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.example.demo.Models.messages.StudentMessages;
+import com.example.demo.Models.responseModels.Response;
+import com.example.demo.Models.responseModels.Status;
+import com.example.demo.services.StudentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "api/v1/student")
 public class StudentController {
-    private final StudentRepository repository;
-    private final PersonRepository personRepository;
+    private final StudentService studentService;
 
     /**
      * constructor to initialize the class
-     *
-     * @param repository       instance of {@link StudentRepository} that is maid and injected by spring
-     * @param personRepository instance of {@link PersonRepository} that is maid and injected by spring( needed because students ar person as well)
      */
-    public StudentController(@Autowired StudentRepository repository, @Autowired PersonRepository personRepository) {
-        this.repository = repository;
-        this.personRepository = personRepository;
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
     }
 
     /**
@@ -39,33 +29,16 @@ public class StudentController {
      * it checks if the national code is already exist
      * then makes the person first and gives it to student
      *
-     * @param person        the actual student( identity and this stuff)
-     * @param bindingResult the result of validating the given person
-     * @param student       the student to insert i db, it just injected by spring
-     * @param map           an instance of {@link LinkedHashMap} injected by spring to use as response
+     * @param person the actual student( identity and this stuff)
      * @return the result of inserting student
      */
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<Map<String, Object>> newStudent(@RequestBody @Valid Person person, BindingResult bindingResult,
-                                                          @Autowired Student student, @Autowired LinkedHashMap<String, Object> map) {
-        if (bindingResult.hasErrors()) {
-            map.put("status", "failed");
-            map.put(bindingResult.getFieldError().getField(), bindingResult.getFieldError().getDefaultMessage());
-            return ResponseEntity.badRequest().body(map);
-        } else {
-            if (personRepository.findPersonByNationalKey(person.getNationalKey()).isPresent()) {
-                map.put("status", "failed");
-                map.put("name", "national code already exists");
-                return ResponseEntity.badRequest().body(map);
-            } else {
-                person.setId(UUID.randomUUID());
-                student.setId(UUID.randomUUID());
-                personRepository.save(person);
-                student.setPerson(person);
-                repository.save(student);
-                map.put("status", "success");
-                return ResponseEntity.ok(map);
-            }
+    public ResponseEntity<Object> newStudent(@RequestBody @Valid Person person) {
+        try {
+            studentService.insertStudent(person);
+            return ResponseEntity.ok(new Response(Status.SUCCESS, StudentMessages.ADDED.getEnMessage()));
+        } catch (GeneralException e) {
+            return e.getEnResponse();
         }
     }
 
@@ -73,36 +46,24 @@ public class StudentController {
      * method to get students avg with his uuid
      *
      * @param studentId the id of the asked user
-     * @param map an instance of {@link LinkedHashMap} injected by spring to use as response
      * @return the avg of the student
      */
     @RequestMapping(path = "avg/{studentId}", produces = "application/json")
-    public ResponseEntity<Map<String, Object>> getStudentAVG(@PathVariable UUID studentId,
-                                                             @Autowired LinkedHashMap<String, Object> map) {
-        Optional<Student> optionalStudent = repository.findById(studentId);
-
-        if (optionalStudent.isPresent()) {
-            map.put("status", "success");
-            map.put("average", optionalStudent.get().getMyAVG());
-            return ResponseEntity.ok(map);
-        } else {
-            map.put("status", "failed");
-            map.put("message", "no student found with provided id");
-
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
+    public ResponseEntity<Object> getStudentAVG(@PathVariable UUID studentId) {
+        try {
+            return ResponseEntity.ok(new Response(Status.SUCCESS, studentService.getStudentAVG(studentId)));
+        } catch (GeneralException e) {
+            return e.getEnResponse();
         }
     }
 
     /**
      * get all students
      *
-     * @param map an instance of {@link LinkedHashMap} injected by spring to use as response
      * @return list of existing students
      */
     @RequestMapping(produces = "application/json")
-    public ResponseEntity<Map<String, Object>> getStudents(@Autowired LinkedHashMap<String, Object> map) {
-        map.put("status", "success");
-        map.put("students", repository.findAll());
-        return ResponseEntity.ok(map);
+    public ResponseEntity<Object> getStudents() {
+        return ResponseEntity.ok(studentService.getAllStudents());
     }
 }

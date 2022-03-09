@@ -2,6 +2,7 @@ package com.example.demo.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Type;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -10,7 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-public class College {
+public class College extends RepresentationModel<College> {
     @Id
     @Column( unique = true, updatable = false)
     @Type(type="org.hibernate.type.UUIDCharType")

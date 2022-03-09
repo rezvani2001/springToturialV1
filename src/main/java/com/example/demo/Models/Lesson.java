@@ -23,6 +23,9 @@ public class Lesson {
     @NonNull
     private String name;
 
+    @ManyToOne
+    private College college;
+
     @OneToMany
     @JsonIgnore
     private Set<Teacher> teachers;
@@ -70,5 +73,13 @@ public class Lesson {
 
     public void setStudents(Set<StudentLesson> students) {
         this.students = students;
+    }
+
+    public College getCollege() {
+        return college;
+    }
+
+    public void setCollege(College college) {
+        this.college = college;
     }
 }
