@@ -8,6 +8,7 @@ import com.example.demo.Repositories.StudentLessonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -55,12 +56,12 @@ public class LessonService {
         this.grantStudent(studentLesson);
     }
 
-    public double getAvgOfStudents (UUID lessonId) throws GeneralException {
+    public double getAvgOfStudents(UUID lessonId) throws GeneralException {
         Lesson lesson = this.getLessonById(lessonId);
 
         double grade = lesson.getStudents().stream().mapToDouble(StudentLesson::getGrade).sum();
 
-        return grade/ lesson.getStudents().size();
+        return grade / lesson.getStudents().size();
     }
 
     public void gradeStudent(UUID lessonId, UUID studentId, float grade) throws GeneralException {
@@ -112,7 +113,7 @@ public class LessonService {
         }
     }
 
-    public Set<Lesson> getAllLessons() {
-        return (Set<Lesson>) lessonRepository.findAll();
+    public List<Lesson> getAllLessons() {
+        return (List<Lesson>) lessonRepository.findAll();
     }
 }

@@ -2,7 +2,6 @@ package com.example.demo.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Type;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,26 +10,26 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-public class College extends RepresentationModel<College> {
+public class College{
     @Id
-    @Column( unique = true, updatable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Column(unique = true, updatable = false)
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID id;
 
-    @NotNull
+    @NotNull(message = "college name is required")
     @Column(unique = true, nullable = false)
-    @Size(min = 2 , max = 255)
+    @Size(min = 2, max = 255)
     private String name;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Teacher> teachers;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Student> students;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Lesson> lessons;
 

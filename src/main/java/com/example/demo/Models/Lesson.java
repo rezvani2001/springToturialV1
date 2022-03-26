@@ -2,10 +2,10 @@ package com.example.demo.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Type;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,21 +16,22 @@ public class Lesson {
     @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID id;
 
-    @Min(value = 1)
-    @NonNull
+    @Min(value = 1, message = "unit value must be at least 1")
+    @NotNull(message = "lesson's unit is required")
     private int unit;
 
-    @NonNull
+    @NotNull(message = "lesson's name is required")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private College college;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Teacher> teachers;
 
-    @OneToMany(mappedBy = "lesson")
+    @OneToMany(mappedBy = "lesson", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<StudentLesson> students;
 
@@ -58,12 +59,12 @@ public class Lesson {
         this.teachers = teachers;
     }
 
-    @NonNull
+
     public String getName() {
         return name;
     }
 
-    public void setName(@NonNull String name) {
+    public void setName(String name) {
         this.name = name;
     }
 

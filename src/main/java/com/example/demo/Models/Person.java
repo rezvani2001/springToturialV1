@@ -2,11 +2,11 @@ package com.example.demo.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Type;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
@@ -18,13 +18,16 @@ public class Person {
     @JsonIgnore
     private UUID id;
 
-    @Size(min = 2)
+    @NotNull(message = "firstname is required")
+    @Size(min = 2, message = "firstname must have 2 characters at least")
     private String firstname;
 
-    @Size(min = 2)
+    @NotNull(message = "lastname is required")
+    @Size(min = 2, message = "lastname must have 2 characters at least")
     private String lastname;
 
     @Column(unique = true, nullable = false)
+    @NotNull(message = "national code is required")
     private String nationalKey;
 
     public Person() {

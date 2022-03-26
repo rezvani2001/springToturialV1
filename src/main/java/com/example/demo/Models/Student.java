@@ -15,12 +15,12 @@ public class Student {
     @Type(type="org.hibernate.type.UUIDCharType")
     private UUID id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonUnwrapped
     @JoinColumn(nullable = false, updatable = false)
     private Person person;
 
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<StudentLesson> studentLessons;
 

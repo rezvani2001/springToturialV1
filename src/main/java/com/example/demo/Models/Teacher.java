@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -21,10 +19,10 @@ public class Teacher {
     @JoinColumn(nullable = false, updatable = false)
     private Person person;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private College college;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Lesson> lessons;
 

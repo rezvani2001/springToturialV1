@@ -33,13 +33,9 @@ public class StudentController {
      * @return the result of inserting student
      */
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<Object> newStudent(@RequestBody @Valid Person person) {
-        try {
-            studentService.insertStudent(person);
-            return ResponseEntity.ok(new Response(Status.SUCCESS, StudentMessages.ADDED.getEnMessage()));
-        } catch (GeneralException e) {
-            return e.getEnResponse();
-        }
+    public ResponseEntity<Object> newStudent(@RequestBody @Valid Person person) throws GeneralException {
+        studentService.insertStudent(person);
+        return ResponseEntity.ok(new Response(Status.SUCCESS, StudentMessages.ADDED.getEnMessage()));
     }
 
     /**
@@ -49,12 +45,8 @@ public class StudentController {
      * @return the avg of the student
      */
     @RequestMapping(path = "avg/{studentId}", produces = "application/json")
-    public ResponseEntity<Object> getStudentAVG(@PathVariable UUID studentId) {
-        try {
-            return ResponseEntity.ok(new Response(Status.SUCCESS, studentService.getStudentAVG(studentId)));
-        } catch (GeneralException e) {
-            return e.getEnResponse();
-        }
+    public ResponseEntity<Object> getStudentAVG(@PathVariable UUID studentId) throws GeneralException {
+        return ResponseEntity.ok(new Response(Status.SUCCESS, studentService.getStudentAVG(studentId)));
     }
 
     /**

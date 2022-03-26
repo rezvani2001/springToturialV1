@@ -10,6 +10,7 @@ import com.example.demo.Repositories.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -66,7 +67,7 @@ public class StudentService {
         } else throw new GeneralException(StudentMessages.NOT_FOUND);
     }
 
-    public Set<Student> getAllStudents() {
-        return (Set<Student>) studentRepository.findAll();
+    public List<Student> getAllStudents() {
+        return (List<Student>) studentRepository.findAll();
     }
 }

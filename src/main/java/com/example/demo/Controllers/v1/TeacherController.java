@@ -27,27 +27,18 @@ public class TeacherController {
      * it checks if the national code is already exist
      * then makes the person first and gives it to teacher
      *
-     * @param person        the actual teacher( identity and this stuff)
-     * @param bindingResult the result of validating the given person
+     * @param person the actual teacher( identity and this stuff)
      * @return the result of inserting teacher
      */
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<Object> newTeacher(@RequestBody @Valid Person person, BindingResult bindingResult) {
-        try {
-            teacherService.insertTeacher(person);
-            return ResponseEntity.ok("done");
-        } catch (GeneralException e) {
-            return e.getEnResponse();
-        }
+    public ResponseEntity<Object> newTeacher(@RequestBody @Valid Person person) throws GeneralException {
+        teacherService.insertTeacher(person);
+        return ResponseEntity.ok("done");
     }
 
     @RequestMapping(path = "lesson/{id}")
-    public ResponseEntity<Object> getLessons(@PathVariable UUID id) {
-        try {
-            return ResponseEntity.ok(teacherService.getTeacherById(id));
-        } catch (GeneralException e){
-            return e.getEnResponse();
-        }
+    public ResponseEntity<Object> getLessons(@PathVariable UUID id) throws GeneralException {
+        return ResponseEntity.ok(teacherService.getTeacherById(id));
     }
 
     /**
@@ -57,12 +48,8 @@ public class TeacherController {
      * @return students of the teacher
      */
     @RequestMapping(method = RequestMethod.GET, path = "student/{teacherID}", produces = "application/json")
-    public ResponseEntity<Object> getStudents(@PathVariable UUID teacherID) {
-        try {
-            return ResponseEntity.ok(teacherService.getStudents(teacherID));
-        } catch (GeneralException e) {
-            return e.getEnResponse();
-        }
+    public ResponseEntity<Object> getStudents(@PathVariable UUID teacherID) throws GeneralException {
+        return ResponseEntity.ok(teacherService.getStudents(teacherID));
     }
 
 
