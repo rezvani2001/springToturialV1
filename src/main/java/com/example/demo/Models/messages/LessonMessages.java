@@ -1,7 +1,13 @@
 package com.example.demo.Models.messages;
 
-public enum LessonMessages implements MessagesInterface {
+import org.springframework.http.ResponseEntity;
+
+public enum LessonMessages implements MessagesInterface{
     ADDED(200, "lesson added successfully", "درس با موفقیت ثبت شد"),
+    STUDENT_ASSIGNED(200, "student added to lesson", "دانشجو به درس اضافه شد"),
+    TEACHER_ASSIGNED(200, "teacher added to lesson", "استاد به درس اضافه شد"),
+    STUDENT_GRADED(200, "student grade has been set", "نمره دانشجو ثبت شد"),
+
     STUDENT_NOT_FOUND(404, "student does not belong to this lesson", "این دانشجو در این درس ثبت نشده است"),
     REQUIRED_TEACHERID_LESSONID(400, "lesson id and teacher id are required", "lesson id و teacher id را وارد کنید"),
     REQUIRED_STDID_LESSONID(400, "lesson id and student id are required", "lesson id و student id را وارد کنید"),
@@ -33,5 +39,4 @@ public enum LessonMessages implements MessagesInterface {
     public String getFaMessage() {
         return this.faMessage;
     }
-
 }

@@ -11,11 +11,11 @@ import java.util.UUID;
 @Entity
 public class Student {
     @Id
-    @Column( nullable = false, unique = true, updatable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Column(nullable = false, unique = true, updatable = false)
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JsonUnwrapped
     @JoinColumn(nullable = false, updatable = false)
     private Person person;
@@ -26,7 +26,6 @@ public class Student {
 
     @ManyToOne
     private College college;
-
 
 
     public College getCollege() {
@@ -71,11 +70,11 @@ public class Student {
         int unit = 0;
         double grade = 0;
 
-        for (StudentLesson studentLesson: this.getStudentLessons()) {
+        for (StudentLesson studentLesson : this.getStudentLessons()) {
             grade += studentLesson.getGrade() * studentLesson.getLesson().getUnit();
             unit += studentLesson.getLesson().getUnit();
         }
 
-        return grade/unit;
+        return grade / unit;
     }
 }

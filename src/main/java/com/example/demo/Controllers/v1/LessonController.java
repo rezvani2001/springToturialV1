@@ -3,11 +3,12 @@ package com.example.demo.Controllers.v1;
 import com.example.demo.Exceptions.GeneralException;
 import com.example.demo.Models.Lesson;
 import com.example.demo.Models.messages.LessonMessages;
+import com.example.demo.Models.messages.MessageInterpreter;
 import com.example.demo.services.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -26,14 +27,13 @@ public class LessonController {
      * method to insert a new lesson into the DB
      *
      * @param lesson the lesson to be added
-     * @param map    an instance of {@link LinkedHashMap} injected by spring to use as response
      * @return the result of inserting the lesson
      */
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<Object> newLesson(@RequestBody @Valid Lesson lesson, @Autowired LinkedHashMap<String, Object> map) {
+    public ResponseEntity<Object> newLesson(@RequestBody @Valid Lesson lesson, WebRequest webRequest) {
         lessonService.insertLesson(lesson);
-        map.put("status", "success");
-        return ResponseEntity.ok(map);
+        return MessageInterpreter.getDesiredResponse(LessonMessages.ADDED, webRequest);
+
     }
 
     /**
@@ -43,7 +43,7 @@ public class LessonController {
      * @return result of adding asked teacher to asked lesson
      */
     @RequestMapping(path = "assign/teacher", produces = "application/json", method = RequestMethod.POST)
-    public ResponseEntity<Object> assignTeacher(@RequestBody HashMap<String, UUID> request) throws GeneralException {
+    public ResponseEntity<Object> assignTeacher(@RequestBody HashMap<String, UUID> request, WebRequest webRequest) throws GeneralException {
         UUID lessonId = request.get("lessonId");
         UUID teacherId = request.get("teacherId");
 
@@ -52,7 +52,7 @@ public class LessonController {
         }
 
         lessonService.assignTeacher(teacherId, lessonId);
-        return ResponseEntity.ok("added");
+        return MessageInterpreter.getDesiredResponse(LessonMessages.TEACHER_ASSIGNED, webRequest);
     }
 
     /**
@@ -62,7 +62,7 @@ public class LessonController {
      * @return result of adding asked student to asked lesson
      */
     @RequestMapping(path = "assign/student", produces = "application/json", method = RequestMethod.POST)
-    public ResponseEntity<Object> assignStudent(@RequestBody HashMap<String, UUID> request) throws GeneralException {
+    public ResponseEntity<Object> assignStudent(@RequestBody HashMap<String, UUID> request, WebRequest webRequest) throws GeneralException {
         UUID lessonId = request.get("lessonId");
         UUID studentId = request.get("studentId");
 
@@ -71,7 +71,7 @@ public class LessonController {
         }
 
         lessonService.assignStudent(studentId, lessonId);
-        return ResponseEntity.ok("added");
+        return MessageInterpreter.getDesiredResponse(LessonMessages.STUDENT_ASSIGNED, webRequest);
     }
 
     /**
@@ -83,6 +83,7 @@ public class LessonController {
     @RequestMapping(path = "avg/{lessonId}")
     public ResponseEntity<Object> getStudentsAVG(@PathVariable UUID lessonId) throws GeneralException {
         double grade = lessonService.getAvgOfStudents(lessonId);
+        // todo change return type
         return ResponseEntity.ok(grade);
     }
 
@@ -93,7 +94,7 @@ public class LessonController {
      * @return the result of setting grade
      */
     @RequestMapping(path = "student/grade", produces = "application/json")
-    public ResponseEntity<Object> gradeStudent(@RequestBody Map<String, Object> request) throws GeneralException {
+    public ResponseEntity<Object> gradeStudent(@RequestBody Map<String, Object> request, WebRequest webRequest) throws GeneralException {
         UUID lessonId = (UUID) request.get("lessonId");
         UUID studentId = (UUID) request.get("studentId");
         Float grade = (Float) request.get("grade");
@@ -103,7 +104,7 @@ public class LessonController {
         }
 
         lessonService.gradeStudent(lessonId, studentId, grade);
-        return ResponseEntity.ok("done");
+        return MessageInterpreter.getDesiredResponse(LessonMessages.STUDENT_GRADED, webRequest);
     }
 
 
@@ -113,7 +114,8 @@ public class LessonController {
      * @return list of existing lessons
      */
     @RequestMapping(produces = "application/json")
-    public ResponseEntity<Object> getStudents(@Autowired LinkedHashMap<String, Object> map) {
+    public ResponseEntity<Object> getStudents() {
+        // todo change return type
         return ResponseEntity.ok(lessonService.getAllLessons());
     }
 }

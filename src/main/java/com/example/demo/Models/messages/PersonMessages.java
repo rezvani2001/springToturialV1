@@ -1,5 +1,7 @@
 package com.example.demo.Models.messages;
 
+import org.springframework.http.ResponseEntity;
+
 public enum PersonMessages implements MessagesInterface {
     ADDED(200, "teacher added successfully", "شخص با موفقیت اضافه شد"),
     DUPLICATED_NATIONAL_CODE(400, "duplicated entry for national code", "شماره ملی وارد شده تکراری است"),

@@ -2,12 +2,14 @@ package com.example.demo.Controllers.v1;
 
 import com.example.demo.Exceptions.GeneralException;
 import com.example.demo.Models.Person;
+import com.example.demo.Models.messages.MessageInterpreter;
 import com.example.demo.Models.messages.StudentMessages;
 import com.example.demo.Models.responseModels.Response;
 import com.example.demo.Models.responseModels.Status;
 import com.example.demo.services.StudentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
 import java.util.UUID;
@@ -33,9 +35,9 @@ public class StudentController {
      * @return the result of inserting student
      */
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<Object> newStudent(@RequestBody @Valid Person person) throws GeneralException {
+    public ResponseEntity<Object> newStudent(@RequestBody @Valid Person person, WebRequest webRequest) throws GeneralException {
         studentService.insertStudent(person);
-        return ResponseEntity.ok(new Response(Status.SUCCESS, StudentMessages.ADDED.getEnMessage()));
+        return MessageInterpreter.getDesiredResponse(StudentMessages.ADDED, webRequest);
     }
 
     /**
@@ -46,6 +48,7 @@ public class StudentController {
      */
     @RequestMapping(path = "avg/{studentId}", produces = "application/json")
     public ResponseEntity<Object> getStudentAVG(@PathVariable UUID studentId) throws GeneralException {
+        // todo change return type
         return ResponseEntity.ok(new Response(Status.SUCCESS, studentService.getStudentAVG(studentId)));
     }
 
@@ -56,6 +59,7 @@ public class StudentController {
      */
     @RequestMapping(produces = "application/json")
     public ResponseEntity<Object> getStudents() {
+        // todo change return type
         return ResponseEntity.ok(studentService.getAllStudents());
     }
 }

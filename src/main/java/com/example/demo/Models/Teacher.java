@@ -19,7 +19,7 @@ public class Teacher {
     @JoinColumn(nullable = false, updatable = false)
     private Person person;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private College college;
 
     @ManyToMany(fetch = FetchType.LAZY)

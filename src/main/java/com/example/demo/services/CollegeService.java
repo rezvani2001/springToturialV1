@@ -5,7 +5,7 @@ import com.example.demo.Models.College;
 import com.example.demo.Models.Lesson;
 import com.example.demo.Models.Student;
 import com.example.demo.Models.Teacher;
-import com.example.demo.Models.messages.CollegeMEssages;
+import com.example.demo.Models.messages.CollegeMessages;
 import com.example.demo.Repositories.CollegeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class CollegeService {
 
     public void insertCollege(College college) throws GeneralException {
         if (collegeRepository.findCollegeByName(college.getName()).isPresent()) {
-            throw new GeneralException(CollegeMEssages.DUPLICATED_NAME);
+            throw new GeneralException(CollegeMessages.DUPLICATED_NAME);
         } else {
             college.setId(UUID.randomUUID());
             collegeRepository.save(college);
@@ -91,7 +91,7 @@ public class CollegeService {
         if (college.isPresent()) {
             return college.get();
         } else {
-            throw new GeneralException(CollegeMEssages.NOT_FOUND);
+            throw new GeneralException(CollegeMessages.NOT_FOUND);
         }
     }
 

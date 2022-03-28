@@ -22,7 +22,7 @@ public class TeacherService {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    public void insertTeacher(Person person) throws GeneralException{
+    public void insertTeacher(Person person) throws GeneralException {
         personService.insertPerson(person);
 
         Teacher teacher = new Teacher();
@@ -36,7 +36,7 @@ public class TeacherService {
         return this.getTeacherById(teacherId).getLessons();
     }
 
-    public List<Student> getStudents (UUID teacherId) throws GeneralException {
+    public List<Student> getStudents(UUID teacherId) throws GeneralException {
         Teacher teacher = this.getTeacherById(teacherId);
         List<Student> students = new ArrayList<>();
 
@@ -75,7 +75,7 @@ public class TeacherService {
         }
     }
 
-    public Set<Teacher> getAllTeachers() {
-        return (Set<Teacher>) teacherRepository.findAll();
+    public List<Teacher> getAllTeachers() {
+        return (List<Teacher>) teacherRepository.findAll();
     }
 }

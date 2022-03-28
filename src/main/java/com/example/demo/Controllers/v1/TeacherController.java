@@ -2,10 +2,12 @@ package com.example.demo.Controllers.v1;
 
 import com.example.demo.Exceptions.GeneralException;
 import com.example.demo.Models.Person;
+import com.example.demo.Models.messages.MessageInterpreter;
+import com.example.demo.Models.messages.TeacherMessages;
 import com.example.demo.services.TeacherService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -31,13 +33,14 @@ public class TeacherController {
      * @return the result of inserting teacher
      */
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<Object> newTeacher(@RequestBody @Valid Person person) throws GeneralException {
+    public ResponseEntity<Object> newTeacher(@RequestBody @Valid Person person, WebRequest webRequest) throws GeneralException {
         teacherService.insertTeacher(person);
-        return ResponseEntity.ok("done");
+        return MessageInterpreter.getDesiredResponse(TeacherMessages.ADDED, webRequest);
     }
 
     @RequestMapping(path = "lesson/{id}")
     public ResponseEntity<Object> getLessons(@PathVariable UUID id) throws GeneralException {
+        // todo change return type
         return ResponseEntity.ok(teacherService.getTeacherById(id));
     }
 
@@ -49,6 +52,7 @@ public class TeacherController {
      */
     @RequestMapping(method = RequestMethod.GET, path = "student/{teacherID}", produces = "application/json")
     public ResponseEntity<Object> getStudents(@PathVariable UUID teacherID) throws GeneralException {
+        // todo change return type
         return ResponseEntity.ok(teacherService.getStudents(teacherID));
     }
 
@@ -60,6 +64,7 @@ public class TeacherController {
      */
     @RequestMapping(produces = "application/json")
     public ResponseEntity<Object> getTeachers() {
+        // todo change return type
         return ResponseEntity.ok(teacherService.getAllTeachers());
     }
 }
