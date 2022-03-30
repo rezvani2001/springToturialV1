@@ -4,6 +4,7 @@ import com.example.demo.Exceptions.GeneralException;
 import com.example.demo.Models.Lesson;
 import com.example.demo.Models.messages.LessonMessages;
 import com.example.demo.Models.messages.MessageInterpreter;
+import com.example.demo.Models.responseModels.PayloadResponse;
 import com.example.demo.services.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -82,9 +83,7 @@ public class LessonController {
      */
     @RequestMapping(path = "avg/{lessonId}")
     public ResponseEntity<Object> getStudentsAVG(@PathVariable UUID lessonId) throws GeneralException {
-        double grade = lessonService.getAvgOfStudents(lessonId);
-        // todo change return type
-        return ResponseEntity.ok(grade);
+        return ResponseEntity.ok(new PayloadResponse(lessonService.getAvgOfStudents(lessonId)));
     }
 
     /**
@@ -115,7 +114,6 @@ public class LessonController {
      */
     @RequestMapping(produces = "application/json")
     public ResponseEntity<Object> getStudents() {
-        // todo change return type
-        return ResponseEntity.ok(lessonService.getAllLessons());
+        return ResponseEntity.ok(new PayloadResponse(lessonService.getAllLessons()));
     }
 }

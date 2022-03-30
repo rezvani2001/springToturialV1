@@ -4,6 +4,7 @@ import com.example.demo.Exceptions.GeneralException;
 import com.example.demo.Models.*;
 import com.example.demo.Models.messages.CollegeMessages;
 import com.example.demo.Models.messages.MessageInterpreter;
+import com.example.demo.Models.responseModels.PayloadResponse;
 import com.example.demo.services.CollegeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.validation.Payload;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -99,14 +101,10 @@ public class CollegeController {
     /**
      * methode to get all colleges records
      *
-     * @param map an instance of {@link LinkedHashMap} injected by spring to use as response
      * @return all existing colleges
      */
     @RequestMapping(produces = "application/json")
-    public ResponseEntity<Map<String, Object>> getColleges(@Autowired LinkedHashMap<String, Object> map) {
-        // todo change return type
-        map.put("status", "success");
-        map.put("colleges", collegeService.getAllColleges());
-        return ResponseEntity.ok(map);
+    public ResponseEntity<Object> getColleges() {
+        return ResponseEntity.ok(new PayloadResponse(collegeService.getAllColleges()));
     }
 }

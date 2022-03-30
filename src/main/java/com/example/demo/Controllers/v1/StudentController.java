@@ -4,6 +4,7 @@ import com.example.demo.Exceptions.GeneralException;
 import com.example.demo.Models.Person;
 import com.example.demo.Models.messages.MessageInterpreter;
 import com.example.demo.Models.messages.StudentMessages;
+import com.example.demo.Models.responseModels.PayloadResponse;
 import com.example.demo.Models.responseModels.Response;
 import com.example.demo.Models.responseModels.Status;
 import com.example.demo.services.StudentService;
@@ -48,8 +49,7 @@ public class StudentController {
      */
     @RequestMapping(path = "avg/{studentId}", produces = "application/json")
     public ResponseEntity<Object> getStudentAVG(@PathVariable UUID studentId) throws GeneralException {
-        // todo change return type
-        return ResponseEntity.ok(new Response(Status.SUCCESS, studentService.getStudentAVG(studentId)));
+        return ResponseEntity.ok(new PayloadResponse(studentService.getStudentAVG(studentId)));
     }
 
     /**
@@ -59,7 +59,6 @@ public class StudentController {
      */
     @RequestMapping(produces = "application/json")
     public ResponseEntity<Object> getStudents() {
-        // todo change return type
-        return ResponseEntity.ok(studentService.getAllStudents());
+        return ResponseEntity.ok(new PayloadResponse(studentService.getAllStudents()));
     }
 }
