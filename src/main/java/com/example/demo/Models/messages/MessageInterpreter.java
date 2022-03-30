@@ -10,7 +10,7 @@ import java.util.Objects;
 public class MessageInterpreter {
     public static ResponseEntity<Object> getDesiredResponse(MessagesInterface message, WebRequest request) {
         return ResponseEntity.status(message.getStatusCode())
-                .body(new Response((message.getStatusCode() < 200 || message.getStatusCode() > 300)? Status.FAILED : Status.SUCCESS,
+                .body(new Response((message.getStatusCode() < 200 || message.getStatusCode() > 300) ? Status.FAILED : Status.SUCCESS,
                         Objects.equals(request.getHeader("lang"), "FA") ? message.getFaMessage() : message.getEnMessage()));
     }
 }

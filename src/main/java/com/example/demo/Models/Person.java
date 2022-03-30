@@ -13,8 +13,8 @@ import java.util.UUID;
 @Entity
 public class Person {
     @Id
-    @Column( nullable = false, unique = true, updatable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Column(nullable = false, unique = true, updatable = false)
+    @Type(type = "org.hibernate.type.UUIDCharType")
     @JsonIgnore
     private UUID id;
 

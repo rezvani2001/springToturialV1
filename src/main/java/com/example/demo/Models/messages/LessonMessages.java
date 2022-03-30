@@ -1,8 +1,7 @@
 package com.example.demo.Models.messages;
 
-import org.springframework.http.ResponseEntity;
 
-public enum LessonMessages implements MessagesInterface{
+public enum LessonMessages implements MessagesInterface {
     ADDED(200, "lesson added successfully", "درس با موفقیت ثبت شد"),
     STUDENT_ASSIGNED(200, "student added to lesson", "دانشجو به درس اضافه شد"),
     TEACHER_ASSIGNED(200, "teacher added to lesson", "استاد به درس اضافه شد"),

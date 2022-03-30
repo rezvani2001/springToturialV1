@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-public class College{
+public class College {
     @Id
     @Column(unique = true, updatable = false)
     @Type(type = "org.hibernate.type.UUIDCharType")
