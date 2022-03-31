@@ -66,6 +66,7 @@ public class Student {
      *
      * @return overall average of the student
      */
+    @JsonIgnore
     public double getMyAVG() {
         int unit = 0;
         double grade = 0;
