@@ -64,4 +64,13 @@ public class Person {
     public void setId(UUID id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", nationalKey='" + nationalKey + '\'' +
+                '}';
+    }
 }

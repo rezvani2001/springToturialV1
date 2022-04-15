@@ -1,13 +1,13 @@
 package com.example.demo.Controllers.v1;
 
 import com.example.demo.Exceptions.GeneralException;
+import com.example.demo.Models.ModelManager;
 import com.example.demo.Models.Person;
 import com.example.demo.Models.messages.MessageInterpreter;
 import com.example.demo.Models.messages.StudentMessages;
 import com.example.demo.Models.responseModels.PayloadResponse;
-import com.example.demo.Models.responseModels.Response;
-import com.example.demo.Models.responseModels.Status;
 import com.example.demo.services.StudentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
@@ -16,15 +16,19 @@ import javax.validation.Valid;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(path = "api/v1/student")
+@RequestMapping(path = "api/v1/students")
 public class StudentController {
-    private final StudentService studentService;
+    @Autowired
+    private StudentService studentService;
 
     /**
      * constructor to initialize the class
      */
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
+    }
+
+    public StudentController() {
     }
 
     /**
@@ -47,7 +51,7 @@ public class StudentController {
      * @param studentId the id of the asked user
      * @return the avg of the student
      */
-    @RequestMapping(path = "avg/{studentId}", produces = "application/json")
+    @RequestMapping(path = "{studentId}/avg", produces = "application/json")
     public ResponseEntity<Object> getStudentAVG(@PathVariable UUID studentId) throws GeneralException {
         return ResponseEntity.ok(new PayloadResponse(studentService.getStudentAVG(studentId)));
     }
@@ -60,5 +64,19 @@ public class StudentController {
     @RequestMapping(produces = "application/json")
     public ResponseEntity<Object> getStudents() {
         return ResponseEntity.ok(new PayloadResponse(studentService.getAllStudents()));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "test/{studentId}/name")
+    public ResponseEntity<Object> testGenericClassGetName(@PathVariable(name = "studentId") UUID studentId) throws Exception {
+        return ResponseEntity.ok(ModelManager.getFieldValue(
+                studentService.getStudentById(studentId).getPerson(), "Firstname"));
+    }
+
+
+    @RequestMapping(method = RequestMethod.POST, path = "test/{studentId}/name/{value}")
+    public ResponseEntity<Object> testGenericClassSetName(@PathVariable(name = "studentId") UUID studentId, @PathVariable("value") String value) throws Exception {
+        Person person = studentService.getStudentById(studentId).getPerson();
+        ModelManager.setFieldValue(person, "Firstname", value);
+        return ResponseEntity.ok(person);
     }
 }
