@@ -20,15 +20,15 @@ public class Person {
 
     @NotNull(message = "firstname is required")
     @Size(min = 2, message = "firstname must have 2 characters at least")
-    private String firstname;
+    public String firstname;
 
     @NotNull(message = "lastname is required")
     @Size(min = 2, message = "lastname must have 2 characters at least")
-    private String lastname;
+    public String lastname;
 
     @Column(unique = true, nullable = false)
     @NotNull(message = "national code is required")
-    private String nationalKey;
+    public String nationalKey;
 
     public Person() {
     }
@@ -68,9 +68,9 @@ public class Person {
     @Override
     public String toString() {
         return "{" +
-                "firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
-                ", nationalKey='" + nationalKey + '\'' +
+                " \"firstname\":\"" + firstname + '"' +
+                ", \"lastname\":\"" + lastname + '"' +
+                ", \"nationalKey\":\"" + nationalKey + '"' +
                 '}';
     }
 }

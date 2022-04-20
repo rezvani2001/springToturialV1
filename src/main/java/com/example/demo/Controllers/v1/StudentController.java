@@ -1,7 +1,6 @@
 package com.example.demo.Controllers.v1;
 
 import com.example.demo.Exceptions.GeneralException;
-import com.example.demo.Models.ModelManager;
 import com.example.demo.Models.Person;
 import com.example.demo.Models.messages.MessageInterpreter;
 import com.example.demo.Models.messages.StudentMessages;
@@ -64,19 +63,5 @@ public class StudentController {
     @RequestMapping(produces = "application/json")
     public ResponseEntity<Object> getStudents() {
         return ResponseEntity.ok(new PayloadResponse(studentService.getAllStudents()));
-    }
-
-    @RequestMapping(method = RequestMethod.GET, path = "test/{studentId}/name")
-    public ResponseEntity<Object> testGenericClassGetName(@PathVariable(name = "studentId") UUID studentId) throws Exception {
-        return ResponseEntity.ok(ModelManager.getFieldValue(
-                studentService.getStudentById(studentId).getPerson(), "Firstname"));
-    }
-
-
-    @RequestMapping(method = RequestMethod.POST, path = "test/{studentId}/name/{value}")
-    public ResponseEntity<Object> testGenericClassSetName(@PathVariable(name = "studentId") UUID studentId, @PathVariable("value") String value) throws Exception {
-        Person person = studentService.getStudentById(studentId).getPerson();
-        ModelManager.setFieldValue(person, "Firstname", value);
-        return ResponseEntity.ok(person);
     }
 }
