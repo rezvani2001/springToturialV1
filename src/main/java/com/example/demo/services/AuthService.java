@@ -24,7 +24,7 @@ public class AuthService {
 
         if (user.getPassword().equals(credentials.password)) {
             Token token = new Token(user);
-            userService.setToken(user, token);
+//            userService.setToken(user, token);
             return token;
         } else {
             throw new GeneralException(UserMessages.WRONG_PASSWORD);
@@ -39,7 +39,7 @@ public class AuthService {
         Date authenticatedAt = new Date(Long.parseLong(parts[0]) + Integer.parseInt(parts[2]));
 
         if (authenticatedAt.before(now)) throw new GeneralException(UserMessages.NOT_AUTHENTICATED);
-
-        return userService.getUserByToken(token);
+        return null;
+//        return userService.getUserByToken(token);
     }
 }

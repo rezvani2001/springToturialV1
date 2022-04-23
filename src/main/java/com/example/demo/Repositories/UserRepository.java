@@ -9,6 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, UUID> {
-     Optional<User> findUserByToken(String token);
      Optional<User> findUserByUsername(String username);
 }

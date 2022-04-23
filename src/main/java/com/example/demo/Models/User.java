@@ -23,18 +23,15 @@ public class User {
     @Size(min = 8, message = "password length must be 8 at lease")
     private String password;
 
-    @Column(unique = true)
-    private String token;
+    @Column(nullable = false)
+    private boolean enabled = true;
 
-    @Column(nullable = true)
-    private int ttl;
-
-    public String getToken() {
-        return token;
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Date getAuthenticatedAt() {
@@ -69,13 +66,5 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public int getTtl() {
-        return ttl;
-    }
-
-    public void setTtl(int ttl) {
-        this.ttl = ttl;
     }
 }
