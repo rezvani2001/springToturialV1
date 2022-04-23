@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class CookieAuthentication extends OncePerRequestFilter {
     AuthService authService;

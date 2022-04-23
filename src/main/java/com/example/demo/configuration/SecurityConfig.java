@@ -14,13 +14,15 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterBefore(new BasicAuthentication(AuthService.instance), BasicAuthenticationFilter.class)
+        http
+                .addFilterAt(new BasicAuthentication(AuthService.instance), BasicAuthenticationFilter.class)
                 .addFilterBefore(new CookieAuthentication(AuthService.instance), BasicAuthentication.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST,"/api/v1/auth/login").permitAll()
-//                .anyRequest().authenticated()
+                .anyRequest().authenticated()
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER).and()
                 .logout().permitAll().deleteCookies("auth");
     }
 }

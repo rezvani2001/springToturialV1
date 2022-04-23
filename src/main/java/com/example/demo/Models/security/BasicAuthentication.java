@@ -26,6 +26,7 @@ public class BasicAuthentication extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
         if ("/api/v1/auth/login".equals(request.getServletPath()) && request.getMethod().equals("POST")) {
             StringBuilder body = new StringBuilder();
             String temp = request.getReader().readLine();
@@ -43,12 +44,15 @@ public class BasicAuthentication extends OncePerRequestFilter {
                 cookie.setHttpOnly(true);
                 cookie.setSecure(true);
 
-                response.addCookie(cookie);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
-        filterChain.doFilter(request, response);
+                response.addCookie(cookie);
+                response.getWriter().println("logged in");
+            } catch (Exception e) {
+                response.setStatus(401);
+                response.getWriter().println("failed to authenticate");
+            }
+        } else {
+            filterChain.doFilter(request, response);
+        }
     }
 }
