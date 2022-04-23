@@ -18,10 +18,10 @@ public class Lesson {
 
     @Min(value = 1, message = "unit value must be at least 1")
     @NotNull(message = "lesson's unit is required")
-    private int unit;
+    public Integer unit;
 
     @NotNull(message = "lesson's name is required")
-    private String name;
+    public String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
@@ -82,5 +82,13 @@ public class Lesson {
 
     public void setCollege(College college) {
         this.college = college;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"unit\":\"" + unit + '"' +
+                ", \"name\":\"" + name + '"' +
+                '}';
     }
 }
